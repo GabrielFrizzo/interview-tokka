@@ -14,14 +14,13 @@ class EtherscanTransaction:
     value: int
     gas: int
     gas_price: int
-    input: str
     contract_address: str
     cumulative_gas_used: int
     gas_used: int
     confirmations: int
 
     @staticmethod
-    def from_json(json):
+    def from_json(json) -> "EtherscanTransaction":
         return EtherscanTransaction(
             block_number=int(json["blockNumber"]),
             time_stamp=int(json["timeStamp"]),
@@ -34,7 +33,6 @@ class EtherscanTransaction:
             value=int(json["value"]),
             gas=int(json["gas"]),
             gas_price=int(json["gasPrice"]),
-            input=json["input"],
             contract_address=json["contractAddress"],
             cumulative_gas_used=int(json["cumulativeGasUsed"]),
             gas_used=int(json["gasUsed"]),
