@@ -1,20 +1,15 @@
 from decimal import Decimal
-from typing import Iterator
 
 from web3 import Web3
 
 from core.value_objects import Transaction
 from services.asset_price_client import AssetPriceClient
-from services.transaction_client import SwapTransactionClient
+from services.transaction_client import TransactionClient
 from services.transaction_fee_service import TransactionFeeService
 from tests.utils.helpers import get_random_transaction
 
 
-class MockSwapTransactionClient(SwapTransactionClient):
-    def get_swap_transactions(self, swap_contract_address) -> Iterator[Transaction]:
-        while True:
-            yield get_random_transaction()
-
+class MockSwapTransactionClient(TransactionClient):
     def get_single_transaction(self, tx_hash: str) -> Transaction:
         return get_random_transaction(
             hash=tx_hash,
