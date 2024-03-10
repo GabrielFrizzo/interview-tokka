@@ -4,10 +4,9 @@ import requests
 from hexbytes import HexBytes
 from web3 import Web3
 
+from config import Config
+from core.value_objects import Transaction
 from services.transaction_client import SwapTransactionClient
-from src.config import Config
-
-from .value_objects import EtherscanTransaction
 
 
 class EtherscanClientException(Exception):
@@ -19,12 +18,9 @@ class EtherscanClient(SwapTransactionClient):
         self.api_key = api_key
         self.url = "https://api.etherscan.io/api"
 
-    def get_swap_transactions(
-        self, swap_contract_address, sort="desc"
-    ) -> Iterator[EtherscanTransaction]:
+    def get_swap_transactions(self, swap_contract_address, sort="desc") -> Iterator[Transaction]:
         current_page = 1
         while True:
-            print("starting next page", current_page)
             page = self.get_swap_transaction_page(swap_contract_address, current_page, sort)
             if not page:
                 break
@@ -33,7 +29,7 @@ class EtherscanClient(SwapTransactionClient):
 
     def get_swap_transaction_page(
         self, swap_contract_address, page=1, sort="desc", page_size=100
-    ) -> list[EtherscanTransaction]:
+    ) -> list[Transaction]:
         params = {
             "module": "account",
             "action": "tokentx",
@@ -56,9 +52,9 @@ class EtherscanClient(SwapTransactionClient):
                 f"Request failed with status code {response_json['status']}, response: {response_json['message']}"
             )
 
-        return [EtherscanTransaction.from_json(item) for item in response_json["result"]]
+        return [Transaction.from_json(item) for item in response_json["result"]]
 
-    def get_single_transaction(self, tx_hash: str) -> EtherscanTransaction:
+    def get_single_transaction(self, tx_hash: str) -> Transaction:
         web3 = Web3(Web3.HTTPProvider(f"https://mainnet.infura.io/v3/{Config.INFURA_API_KEY}"))
         tx = web3.eth.get_transaction_receipt(HexBytes(tx_hash))
         block_number = tx.get("blockNumber")
@@ -66,20 +62,12 @@ class EtherscanClient(SwapTransactionClient):
             raise EtherscanClientException(f"Transaction with hash {tx_hash} not found")
         timestamp = web3.eth.get_block(block_number).get("timestamp", 0)
 
-        return EtherscanTransaction(
+        return Transaction(
             block_number=tx.get("blockNumber", 0),
             time_stamp=timestamp * 1000,
             hash=str(tx.get("hash")),
-            nonce=tx.get("nonce", ""),
-            block_hash=str(tx.get("blockHash")),
-            transaction_index=tx.get("transactionIndex", 0),
             from_address=tx.get("from", ""),
             to_address=tx.get("to", ""),
-            value=tx.get("value", ""),
-            gas=tx.get("maxFeePerGas", 0),
-            gas_price=tx.get("effectiveGasPrice", ""),
-            contract_address=str(tx.get("contractAddress")),
-            cumulative_gas_used=tx.get("cumulativeGasUsed", ""),
+            gas_price=tx.get("effectiveGasPrice", Web3.to_wei(0, "ether")),
             gas_used=tx.get("gasUsed", 0),
-            confirmations=tx.get("confirmations", ""),
         )

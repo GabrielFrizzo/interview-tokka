@@ -6,6 +6,7 @@ authors = ["Gabriel Frizzo <gabrielfrizzo@gmail.com>"]
 readme = "README.md"
 license = "MIT"
 package-mode = false
+packages = [{ include = "src", from = "." }]
 
 [tool.poetry.dependencies]
 python = "^3.11"
@@ -29,9 +30,9 @@ celery-types = "^0.22.0"
 pre-commit = "^3.6.2"
 
 [tool.pytest.ini_options]
-pythonpath = ["src"]
+pythonpath = ["src", "tests/utils"]
 filterwarnings = ["error"]
-addopts = ["--import-mode=importlib"]
+addopts = ["--import-mode=append"]
 
 [tool.mypy]
 python_version = "3.11"
