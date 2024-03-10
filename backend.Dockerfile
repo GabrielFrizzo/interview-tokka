@@ -1,4 +1,4 @@
-FROM tiangolo/uvicorn-gunicorn-fastapi:python3.11
+FROM python:3.11
 
 WORKDIR /app/
 
@@ -11,8 +11,7 @@ COPY ./pyproject.toml ./poetry.lock* /app/
 
 RUN poetry install --no-root
 
-ENV MODULE_NAME=src.api.main
-ENV PYTHONPATH=/app
+ENV PYTHONPATH=/app/src
 
 # COPY ./alembic.ini /app/
 
@@ -21,3 +20,5 @@ ENV PYTHONPATH=/app
 # COPY ./tests-start.sh /app/
 
 COPY ./src /app/src
+
+CMD ["poetry", "run", "uvicorn", "src.api.main:app", "--host", "0.0.0.0", "--port", "80", "--reload"]

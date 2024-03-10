@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from decimal import Decimal
 
 
 @dataclass
@@ -18,6 +19,9 @@ class EtherscanTransaction:
     cumulative_gas_used: int
     gas_used: int
     confirmations: int
+
+    def get_eth_used(self) -> Decimal:
+        return Decimal(self.gas_used) * Decimal(self.gas_price) / Decimal(10**18)
 
     @staticmethod
     def from_json(json) -> "EtherscanTransaction":

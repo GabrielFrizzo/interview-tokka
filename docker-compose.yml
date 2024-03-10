@@ -9,6 +9,8 @@ services:
       - db
     ports:
       - "8000:80"
+    volumes:
+      - ./src:/app/src
 
   db:
     image: postgres:15
