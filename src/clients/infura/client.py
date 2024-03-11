@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from hexbytes import HexBytes
 from web3 import Web3
 
@@ -19,12 +21,15 @@ class InfuraClient(TransactionClient):
             raise ClientException(f"Transaction with hash {tx_hash} not found")
         timestamp = web3.eth.get_block(block_number).get("timestamp", 0)
 
+        transaction_hash = tx.get("transactionHash")
+        if not transaction_hash:
+            raise ClientException(f"Transaction with hash {tx_hash} not found")
         return Transaction(
             block_number=tx.get("blockNumber", 0),
-            time_stamp=timestamp * 1000,
-            tx_hash=str(tx.get("hash")),
+            time_stamp=Decimal(timestamp) * 1000,
+            tx_hash=transaction_hash.hex(),
             from_address=tx.get("from", ""),
             to_address=tx.get("to", ""),
-            gas_price=tx.get("effectiveGasPrice", Web3.to_wei(0, "ether")),
-            gas_used=tx.get("gasUsed", 0),
+            gas_price=Decimal(tx.get("effectiveGasPrice", Web3.to_wei(0, "ether"))),
+            gas_used=Decimal(tx.get("gasUsed", 0)),
         )

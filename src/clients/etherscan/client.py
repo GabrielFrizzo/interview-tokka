@@ -1,3 +1,4 @@
+from decimal import Decimal
 from typing import Iterator
 
 import requests
@@ -51,10 +52,10 @@ class EtherscanClient(SwapTransactionClient):
     def _make_transaction(self, json: dict) -> Transaction:
         return Transaction(
             block_number=int(json["blockNumber"]),
-            time_stamp=int(json["timeStamp"]),
+            time_stamp=Decimal(json["timeStamp"]),
             tx_hash=json["hash"],
             from_address=json["from"],
             to_address=json["to"],
-            gas_price=int(json["gasPrice"]),
-            gas_used=int(json["gasUsed"]),
+            gas_price=Decimal(json["gasPrice"]),
+            gas_used=Decimal(json["gasUsed"]),
         )

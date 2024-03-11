@@ -1,7 +1,6 @@
 import os
 
-from sqlalchemy import create_engine
-from sqlmodel import SQLModel
+from sqlmodel import SQLModel, create_engine
 
 
 def get_url():

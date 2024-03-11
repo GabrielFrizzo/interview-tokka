@@ -1,7 +1,9 @@
 from decimal import Decimal
 
 from fastapi import APIRouter
+from sqlmodel import Session
 
+from alembic.main import engine
 from clients.binance.binance_client import BinanceClient
 from clients.infura.client import InfuraClient
 from config import Config
@@ -16,9 +18,14 @@ def get_transaction_fee(transaction_hash: str) -> Decimal:
     assert Config.INFURA_API_KEY is not None
     infura_client = InfuraClient(api_key=Config.INFURA_API_KEY)
 
-    usd_fee = TransactionFeeService(
-        asset_price_client=binance_client, transaction_client=infura_client
-    ).get_transaction_fee(transaction_hash)
+    with Session(engine) as session:
+        usd_fee = TransactionFeeService(
+            asset_price_client=binance_client,
+            transaction_client=infura_client,
+            session=session,
+        ).get_transaction_fee(transaction_hash)
+
+        session.commit()
 
     return usd_fee
 

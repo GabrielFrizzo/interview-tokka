@@ -1,11 +1,13 @@
 from decimal import Decimal
 
+from sqlmodel import Session
+from web3 import Web3
+
 from models import Transaction
 from services.asset_price_client import AssetPriceClient
 from services.transaction_client import TransactionClient
 from services.transaction_fee_service import TransactionFeeService
-from web3 import Web3
-
+from tests.utils.db import engine
 from tests.utils.helpers import get_random_transaction
 
 
@@ -26,5 +28,8 @@ class MockAssetPriceClient(AssetPriceClient):
 def test_get_transaction_fee():
     swap_transaction_client = MockSwapTransactionClient()
     asset_price_client = MockAssetPriceClient("ETHUSDT")
-    service = TransactionFeeService(swap_transaction_client, asset_price_client)
+    with Session(engine) as session:
+        service = TransactionFeeService(
+            swap_transaction_client, asset_price_client, session=session
+        )
     assert service.get_transaction_fee("0x") == Decimal(100)
