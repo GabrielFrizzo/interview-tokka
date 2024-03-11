@@ -1,11 +1,11 @@
 from decimal import Decimal
 
-from web3 import Web3
-
-from core.value_objects import Transaction
+from models import Transaction
 from services.asset_price_client import AssetPriceClient
 from services.transaction_client import TransactionClient
 from services.transaction_fee_service import TransactionFeeService
+from web3 import Web3
+
 from tests.utils.helpers import get_random_transaction
 
 

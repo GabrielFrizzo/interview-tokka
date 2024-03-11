@@ -1,10 +1,10 @@
 from typing import Iterator
 
 import requests
+from models import Transaction
+from services.transaction_client import SwapTransactionClient
 
 from clients.exceptions import ClientException
-from core.value_objects import Transaction
-from services.transaction_client import SwapTransactionClient
 
 
 class EtherscanClient(SwapTransactionClient):
@@ -46,4 +46,15 @@ class EtherscanClient(SwapTransactionClient):
                 f"Request failed with status code {response_json['status']}, response: {response_json['message']}"
             )
 
-        return [Transaction.from_json(item) for item in response_json["result"]]
+        return [self._make_transaction(item) for item in response_json["result"]]
+
+    def _make_transaction(self, json: dict) -> Transaction:
+        return Transaction(
+            block_number=int(json["blockNumber"]),
+            time_stamp=int(json["timeStamp"]),
+            tx_hash=json["hash"],
+            from_address=json["from"],
+            to_address=json["to"],
+            gas_price=int(json["gasPrice"]),
+            gas_used=int(json["gasUsed"]),
+        )

@@ -3,7 +3,7 @@ from web3 import Web3
 
 from clients.exceptions import ClientException
 from config import Config
-from core.value_objects import Transaction
+from models import Transaction
 from services.transaction_client import TransactionClient
 
 
@@ -22,7 +22,7 @@ class InfuraClient(TransactionClient):
         return Transaction(
             block_number=tx.get("blockNumber", 0),
             time_stamp=timestamp * 1000,
-            hash=str(tx.get("hash")),
+            tx_hash=str(tx.get("hash")),
             from_address=tx.get("from", ""),
             to_address=tx.get("to", ""),
             gas_price=tx.get("effectiveGasPrice", Web3.to_wei(0, "ether")),

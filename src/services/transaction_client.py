@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Iterator
 
-from core.value_objects import Transaction
+from models import Transaction
 
 
 class TransactionClient(ABC):
