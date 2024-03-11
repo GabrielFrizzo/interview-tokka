@@ -13,12 +13,9 @@ RUN poetry install --no-root
 
 ENV PYTHONPATH=/app/src
 
-# COPY ./alembic.ini /app/
-
-# COPY ./prestart.sh /app/
-
-# COPY ./tests-start.sh /app/
 
 COPY ./src /app/src
 
-CMD ["poetry", "run", "uvicorn", "src.api.main:app", "--host", "0.0.0.0", "--port", "80", "--reload"]
+COPY ./backend-start.sh /app/
+RUN chmod +x /app/backend-start.sh
+CMD [ "/app/backend-start.sh" ]

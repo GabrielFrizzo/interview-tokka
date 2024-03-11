@@ -12,6 +12,7 @@ services:
     volumes:
       - ./src:/app/src
       - .env:/app/.env
+      - ./backend-start.sh:/app/backend-start.sh
 
   db:
     image: postgres:15
@@ -31,6 +32,9 @@ services:
     depends_on:
       - web
       - db
+    volumes:
+      - ./src:/app/src
+      - .env:/app/.env
 
 
   dashboard:
