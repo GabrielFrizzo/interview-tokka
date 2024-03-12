@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Iterator
 
-from models import Transaction
+from models import BlockWindow, Transaction
 
 
 class TransactionClient(ABC):
@@ -12,5 +12,7 @@ class TransactionClient(ABC):
 
 class SwapTransactionClient(ABC):
     @abstractmethod
-    def get_swap_transactions(self, swap_contract_address: str) -> Iterator[Transaction]:
+    def get_swap_transactions(
+        self, swap_contract_address: str, block_window: BlockWindow
+    ) -> Iterator[Transaction]:
         pass

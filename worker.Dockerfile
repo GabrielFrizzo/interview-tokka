@@ -14,12 +14,12 @@ RUN poetry install --no-root
 ENV C_FORCE_ROOT=1
 
 ENV MODULE_NAME=src.background.main
-ENV PYTHONPATH=/app
+ENV PYTHONPATH=/app/src
 
-COPY ./worker-start.sh /worker-start.sh
+COPY ./worker-start.sh /app/worker-start.sh
 
 COPY ./src /app/src
 
-RUN chmod +x /worker-start.sh
+RUN chmod +x /app/worker-start.sh
 
-CMD ["/worker-start.sh"]
+CMD ["/app/worker-start.sh"]

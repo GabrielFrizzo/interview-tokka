@@ -1,6 +1,10 @@
+import uuid
+from datetime import datetime
 from decimal import Decimal
+from enum import Enum, auto
 from typing import Optional
 
+from pydantic import BaseModel
 from sqlmodel import Field, SQLModel
 
 
@@ -21,3 +25,28 @@ class Transaction(SQLModel, table=True):
         if self.eth_price is None:
             raise ValueError("ETH price is not set")
         return self.eth_price * self.get_eth_used()
+
+
+class BlockWindow(BaseModel):
+    start: int
+    end: int
+
+
+class JobStatus(Enum):
+    PENDING = auto()
+    IN_PROGRESS = auto()
+    COMPLETED = auto()
+    FAILED = auto()
+
+
+class ImportingJob(SQLModel, table=True):
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    start_block_number: int
+    end_block_number: int
+    last_block_processed: Optional[int] = Field(default=None)
+    status: JobStatus = Field(default=JobStatus.PENDING)
+    created_at: datetime = Field(default_factory=datetime.now)
+
+    @property
+    def block_window(self) -> BlockWindow:
+        return BlockWindow(start=self.start_block_number, end=self.end_block_number)

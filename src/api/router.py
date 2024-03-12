@@ -1,13 +1,14 @@
 from decimal import Decimal
 
-from fastapi import APIRouter
-from sqlmodel import Session
-
 from alembic.main import engine
+from background.tasks import process_batch_imports
 from clients.binance.binance_client import BinanceClient
 from clients.infura.client import InfuraClient
 from config import Config
+from fastapi import APIRouter
+from models import BlockWindow, ImportingJob
 from services.transaction_fee_service import TransactionFeeService
+from sqlmodel import Session
 
 router = APIRouter()
 
@@ -31,5 +32,9 @@ def get_transaction_fee(transaction_hash: str) -> Decimal:
 
 
 @router.get("/batch")
-def get_batch_transaction_fee():
-    pass
+def get_batch_transaction_fee(block_window: BlockWindow):
+    with Session(engine) as session:
+        job = ImportingJob(start_block_number=block_window.start, end_block_number=block_window.end)
+        session.add(job)
+        session.commit()
+    process_batch_imports.delay(str(job.id))

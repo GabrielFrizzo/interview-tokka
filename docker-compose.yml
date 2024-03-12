@@ -35,6 +35,7 @@ services:
     volumes:
       - ./src:/app/src
       - .env:/app/.env
+      - ./worker-start.sh:/app/worker-start.sh
 
 
   dashboard:
