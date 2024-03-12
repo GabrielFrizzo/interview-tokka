@@ -11,7 +11,7 @@ def get_url():
     return f"postgresql+psycopg://{user}:{password}@{server}/{db}"
 
 
-engine = create_engine(get_url(), echo=True)
+engine = create_engine(get_url(), echo=False)
 
 
 def create_db_and_tables():

@@ -1,6 +1,10 @@
 from datetime import datetime, timedelta
 
+from sqlalchemy import text
+from sqlmodel import Session, and_, select
+
 from alembic.main import engine
+from background.main import celery_app
 from clients.binance.binance_client import BinanceClient
 from clients.etherscan.client import EtherscanClient
 from clients.infura.client import InfuraClient
@@ -8,10 +12,8 @@ from config import Config
 from models import ImportingJob, JobStatus
 from services.batch_fee_service import BatchFeeService
 from services.transaction_fee_service import TransactionFeeService
-from sqlalchemy import text
-from sqlmodel import Session, and_, select
 
-from background.main import celery_app
+PAGE_SIZE = 100_000
 
 
 @celery_app.task(acks_late=True)
@@ -41,13 +43,16 @@ def periodical_batch_job_creation():
             return
         new_start, new_end = result
         if new_start is None:
-            new_start = 0
+            new_start = Config.START_BLOCK_NUMBER
         if new_end is None:
-            new_end = new_start + 9999
+            new_end = new_start + PAGE_SIZE * 10
 
-        for start in range(new_start, new_end, 1000):
+        for start in range(new_start, new_end, PAGE_SIZE):
             session.add(
-                ImportingJob(start_block_number=start, end_block_number=min(new_end, start + 999))
+                ImportingJob(
+                    start_block_number=start,
+                    end_block_number=min(new_end, start + PAGE_SIZE - 1),
+                )
             )
         session.commit()
 
