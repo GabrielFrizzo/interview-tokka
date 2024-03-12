@@ -1,4 +1,3 @@
-from decimal import Decimal
 from typing import Optional
 
 from models import Transaction
@@ -23,7 +22,7 @@ class TransactionFeeService:
         transaction = self.session.exec(stmt).one_or_none()
         return transaction
 
-    def get_transaction_fee(self, address: str) -> Decimal:
+    def get_transaction_with_fee(self, address: str) -> Transaction:
         cached_tx = self._get_cached_transaction(address)
         if cached_tx:
             tx = cached_tx
@@ -35,4 +34,4 @@ class TransactionFeeService:
             tx.eth_price = self.asset_price_client.get_price(int(tx.time_stamp))
             self.session.add(tx)
 
-        return tx.get_eth_used() * tx.eth_price
+        return tx

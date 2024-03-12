@@ -1,0 +1,183 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Tokka API",
+    "description": "Backend for checking USDT equivalent of transaction fees on Uniswap V3's USDC/WETH pool",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/api/{transaction_hash}/fee": {
+      "get": {
+        "summary": "Get Transaction Fee",
+        "operationId": "get_transaction_fee_api__transaction_hash__fee_get",
+        "parameters": [
+          {
+            "name": "transaction_hash",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "title": "Transaction Hash" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransactionFeeResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/batch": {
+      "post": {
+        "summary": "Get Batch Transaction Fee",
+        "operationId": "get_batch_transaction_fee_api_batch_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/BlockWindow" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/GetBatchApiResponse" }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/batch/{job_id}": {
+      "get": {
+        "summary": "Get Job Status",
+        "operationId": "get_job_status_api_batch__job_id__get",
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "title": "Job Id" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": { "application/json": { "schema": {} } }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "BlockWindow": {
+        "properties": {
+          "start": { "type": "integer", "title": "Start" },
+          "end": { "type": "integer", "title": "End" }
+        },
+        "type": "object",
+        "required": ["start", "end"],
+        "title": "BlockWindow"
+      },
+      "GetBatchApiResponse": {
+        "properties": { "job_id": { "type": "string", "title": "Job Id" } },
+        "type": "object",
+        "required": ["job_id"],
+        "title": "GetBatchApiResponse"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": { "$ref": "#/components/schemas/ValidationError" },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "Transaction": {
+        "properties": {
+          "tx_hash": { "type": "string", "title": "Tx Hash" },
+          "block_number": { "type": "integer", "title": "Block Number" },
+          "time_stamp": { "type": "string", "title": "Time Stamp" },
+          "from_address": { "type": "string", "title": "From Address" },
+          "to_address": { "type": "string", "title": "To Address" },
+          "gas_price": { "type": "string", "title": "Gas Price" },
+          "gas_used": { "type": "string", "title": "Gas Used" },
+          "eth_price": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Eth Price"
+          }
+        },
+        "type": "object",
+        "required": [
+          "tx_hash",
+          "block_number",
+          "time_stamp",
+          "from_address",
+          "to_address",
+          "gas_price",
+          "gas_used"
+        ],
+        "title": "Transaction"
+      },
+      "TransactionFeeResponse": {
+        "properties": {
+          "transaction": { "$ref": "#/components/schemas/Transaction" },
+          "fee_in_usdt": { "type": "string", "title": "Fee In Usdt" }
+        },
+        "type": "object",
+        "required": ["transaction", "fee_in_usdt"],
+        "title": "TransactionFeeResponse"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": { "anyOf": [{ "type": "string" }, { "type": "integer" }] },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": { "type": "string", "title": "Message" },
+          "type": { "type": "string", "title": "Error Type" }
+        },
+        "type": "object",
+        "required": ["loc", "msg", "type"],
+        "title": "ValidationError"
+      }
+    }
+  }
+}

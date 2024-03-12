@@ -21,7 +21,7 @@ class BatchFeeService:
             block_window=importing_job.block_window,
         )
         for idx, transaction in enumerate(transactions):
-            self.transaction_fee_service.get_transaction_fee(transaction.tx_hash)
+            self.transaction_fee_service.get_transaction_with_fee(transaction.tx_hash)
             if idx % 20 == 0:  # Commit every 20 transactions
                 importing_job.last_block_processed = transaction.block_number
                 self.transaction_fee_service.session.add(importing_job)

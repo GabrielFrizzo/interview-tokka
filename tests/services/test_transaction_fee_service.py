@@ -32,4 +32,4 @@ def test_get_transaction_fee():
         service = TransactionFeeService(
             swap_transaction_client, asset_price_client, session=session
         )
-    assert service.get_transaction_fee("0x") == Decimal(100)
+    assert service.get_transaction_with_fee("0x").get_usdt_price() == Decimal(100)
