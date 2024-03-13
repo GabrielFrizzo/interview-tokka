@@ -31,15 +31,15 @@ poetry run pytest .
 
 Based on FastApi, contains three simple endpoints, which are described in the [openapi.json](openapi.json) file.
 
-## Get Transaction Fee
+#### Get Transaction Fee
 
 Given a hash, returns the transaction, together with the fee spent in USDT equivalent.
 
-## Post Importing Job
+#### Post Importing Job
 
 Given a range of blocks, returns the job ID.
 
-## Get Importing Job Status
+#### Get Importing Job Status
 
 Given the job ID obtained from the endpoint above, returns the status of the job and, if the latter is COMPLETED, all of the transactions and respective transaction fees in USDT.
 
