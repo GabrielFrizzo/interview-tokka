@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "tokka_interview"
+name = "uniswap_pricing"
 version = "0.1.0"
 description = "Backend for teching USDT equivalent of transaction fees on Uniswap V3's USDC/WETH pool"
 authors = ["Gabriel Frizzo <gabrielfrizzo@gmail.com>"]
